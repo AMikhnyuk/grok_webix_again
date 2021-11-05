@@ -1,5 +1,6 @@
 .idea/
 client/codebase/
 client/node_modules/
+server/node_modules/
 *.log
 dist/
