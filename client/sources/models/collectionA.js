@@ -1,4 +1,6 @@
+import config from "../../config";
+
 export default new webix.DataCollection({
-	url: "http://localhost:3000/groups",
-	save: "rest->http://localhost:3000/groups"
+	url: `${config.url}/groups`,
+	save: `rest->${config.url}/groups`
 });

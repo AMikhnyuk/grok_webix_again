@@ -47,7 +47,7 @@ export default class MembersView extends JetView {
 							content: "dateFilter"
 						}
 					],
-					editor: "date",
+					editor: "text",
 					sort: "date",
 					adjust: true
 				},

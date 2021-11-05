@@ -36,8 +36,10 @@ export default class AlbumsView extends JetView {
 					id: "copiesnum",
 					header: "Copies",
 					template({copiesnum}) {
+						const M = 1000000
+						const K = 1000
 						return `> 
-						${copiesnum > 999999 ? `${/\d/.exec(copiesnum)}M` : copiesnum} `;
+						${copiesnum / M > 1 ? `${copiesnum / M}M` : `${copiesnum / T}K`} `;
 					},
 					fillspace: 2
 				},

@@ -1,5 +1,6 @@
-export default new webix.DataCollection({
-	url: "http://localhost:3000/members",
-	save: "rest->http://localhost:3000/members"
+import config from "../../config";
 
+export default new webix.DataCollection({
+	url: `${config.url}/members`,
+	save: `rest->${config.url}/members`
 });

@@ -1,11 +1,12 @@
 import mysql from "mysql"
-import dbConfig from "./config/db.config.js";
+import dotenv from "dotenv"
+dotenv.config()
 
 const connection = mysql.createConnection({
-    host: dbConfig.host,
-    user: dbConfig.user,
-    password: dbConfig.password,
-    database: dbConfig.database
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE
 })
 connection.connect(error => {
     if (error) throw error;

@@ -73,7 +73,7 @@ export default class GroupsView extends JetView {
 							content: "dateRangeFilter"
 						}
 					],
-					editor: "date",
+					editor: "text",
 					sort: "date",
 					fillspace: 2
 				},
