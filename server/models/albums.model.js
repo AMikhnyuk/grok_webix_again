@@ -43,5 +43,19 @@ export default class Albums {
             }
         );
     }
+    static createItem = (item, result) => {
+        mydb.query("INSERT INTO albums SET name = ?, groupId = ?",
+            [item.name, item.groupId],
+            (err, res) => {
+                if (err) {
+                    console.log("error: ", err);
+                    result(err, null);
+                    return;
+                }
+
+                console.log("created album: ", { id: res.insertId, ...item });
+                result(null, { id: res.insertId, ...item });
+            });
+    };
 
 }

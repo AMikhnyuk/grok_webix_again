@@ -42,4 +42,18 @@ export default class Groups {
             }
         );
     }
+    static createItem = (item, result) => {
+        mydb.query("INSERT INTO groups SET name = ?",
+            [item.name],
+            (err, res) => {
+                if (err) {
+                    console.log("error: ", err);
+                    result(err, null);
+                    return;
+                }
+
+                console.log("created group: ", { id: res.insertId, ...item });
+                result(null, { id: res.insertId, ...item });
+            });
+    };
 }

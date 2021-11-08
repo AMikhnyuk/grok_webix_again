@@ -10,6 +10,7 @@ const router = new Router()
 const groupsController = new CommonController(Groups)
 router.get("/groups", (req, res) => groupsController.findAll(req, res))
 router.put("/groups/:groupId", (req, res) => groupsController.update(req, res))
+router.post("/groups", (req, res) => groupsController.create(req, res))
 
 const membersController = new CommonController(Members)
 router.get("/members", (req, res) => membersController.findAll(req, res))
@@ -18,6 +19,7 @@ router.put("/members/:memberId", (req, res) => membersController.update(req, res
 const albumsController = new CommonController(Albums)
 router.get("/albums", (req, res) => albumsController.findAll(req, res))
 router.put("/albums/:albumId", (req, res) => albumsController.update(req, res))
+router.post("/albums", (req, res) => albumsController.create(req, res))
 
 const songsController = new CommonController(Songs)
 router.get("/songs", (req, res) => songsController.findAll(req, res))

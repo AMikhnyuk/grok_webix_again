@@ -2,11 +2,11 @@ import {JetView, plugins} from "webix-jet";
 
 export default class TopView extends JetView {
 	config() {
-		let header = {
+		const header = {
 			type: "header", template: "Navigation", css: "webix_header app_header"
 		};
 
-		let menu = {
+		const menu = {
 			view: "menu",
 			id: "top:menu",
 			css: "app_menu",
@@ -22,7 +22,7 @@ export default class TopView extends JetView {
 			]
 		};
 
-		let ui = {
+		const ui = {
 			type: "clean",
 			paddingX: 5,
 			css: "app_layout",

@@ -104,8 +104,6 @@ export default class GroupsView extends JetView {
 
 	init() {
 		const table = this.$$("groups:table");
-		collectionA.waitData.then(() => {
-			table.sync(collectionA);
-		});
+		table.sync(collectionA);
 	}
 }
