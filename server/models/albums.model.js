@@ -1,61 +1,30 @@
-import mydb from "../mydb.js"
+import DataTypes from "sequelize";
+import sequelize from "../seq.js";
 
-export default class Albums {
-    constructor(album) {
-        this.name = album.name
-        this.date = album.date
-        this.songnum = album.songnum
-        this.copiesnum = album.copiesnum
-        this.groupId = album.groupId
-        this.image = album.image
+const Album = sequelize.define('Album', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    name: {
+        type: DataTypes.STRING,
+    },
+    date: {
+        type: DataTypes.STRING
+    },
+    songsnum: {
+        type: DataTypes.STRING
+    },
+    copiesnum: {
+        type: DataTypes.STRING
+    },
+    groupId: {
+        type: DataTypes.INTEGER
+    },
+    image: {
+        type: DataTypes.STRING(1234)
     }
-    static getAll(result) {
-        mydb.query("SELECT * FROM albums", (err, res) => {
-            if (err) {
-                console.log("error: ", err);
-                result(null, err);
-                return;
-            }
-            console.log("albums: ", res);
-            result(null, res);
-
-
-        });
-    };
-    static updateById(id, album, result) {
-        mydb.query(
-            `UPDATE albums SET name = ?, date = ?, songnum = ?, copiesnum = ?, groupId = ?, image = ? WHERE id = ?`,
-            [album.name, album.date, album.songnum, album.copiesnum, album.groupId, album.image, id],
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    result(null, err);
-                    return;
-                }
-
-                if (res.affectedRows == 0) {
-                    result({ kind: "not_found" }, null);
-                    return;
-                }
-
-                console.log("updated album: ", { id: id, ...album });
-                result(null, { id: id, ...album });
-            }
-        );
-    }
-    static createItem = (item, result) => {
-        mydb.query("INSERT INTO albums SET name = ?, groupId = ?",
-            [item.name, item.groupId],
-            (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    result(err, null);
-                    return;
-                }
-
-                console.log("created album: ", { id: res.insertId, ...item });
-                result(null, { id: res.insertId, ...item });
-            });
-    };
-
-}
+}, {});
+await Album.sync({ alter: true })
+export default Album

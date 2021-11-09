@@ -1,78 +1,62 @@
-import Groups from "../models/groups.model.js";
-
+import Op from "sequelize";
 
 export default class CommonController {
     constructor(model) {
         this.model = model
-    }
-    findAll(req, res) {
-        this.model.getAll((err, data) => {
-            if (err)
-                res.status(500).send({
-                    message:
-                        err.message || "Error"
-                });
-            else res.send(data);
-        })
 
     }
-    update(req, res) {
-        if (!req.body) {
-            res.status(400).send({
-                message: "no request body"
-            });
-
-        }
+    async findAll(req, res) {
+        const all = await this.model.findAll();
+        res.send(all)
+    }
+    async update(req, res) {
         const id = Object.values(req.params)[0]
-        this.model.updateById(
-            id,
-            new this.model(req.body),
-            (err, data) => {
-                if (err) {
-                    if (err.kind === "not_found") {
-                        res.status(404).send({
-                            message: `Not found item with id ${id}.`
-
-                        });
-                    } else {
-                        res.status(500).send({
-                            message: "Error updating item with id " + id
-                        });
-                    }
-                } else res.send(data);
+        const result = await this.model.update(req.body, {
+            where: {
+                id: id
             }
-        )
-    }
-    create(req, res) {
-        if (!req.body) {
-            res.status(400).send({
-                message: "empty request"
-            });
-        }
-        const item = new this.model(req.body);
-        this.model.createItem(item, (err, data) => {
-            if (err)
-                res.status(500).send({
-                    message:
-                        err.message || "Some error occurred while creating the Customer."
-                });
-            else res.send(data);
         });
+        res.send(result)
     }
-    delete(req, res) {
+    async create(req, res) {
+        const result = await this.model.create(req.body)
+        res.send(result)
+    }
+    async delete(req, res) {
         const id = Object.values(req.params)[0]
-        this.model.remove(id, (err, data) => {
-            if (err) {
-                if (err.kind === "not_found") {
-                    res.status(404).send({
-                        message: `Not found Customer with id ${id}.`
-                    });
-                } else {
-                    res.status(500).send({
-                        message: "Could not delete Customer with id " + id
-                    });
-                }
-            } else res.send({ message: `Customer was deleted successfully!` });
+        const result = await this.model.destroy({
+            where: {
+                id: id
+            }
         });
-    };
+        res.send(result)
+    }
+    async filterAndSort(req, res) {
+        try {
+            const result = await this.model.findAll({
+                where: this.filter(req),
+                order: this.sort(req)
+            })
+            res.send(result)
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+    filter(req) {
+        const filter = req.query.filter
+        const criteries = {}
+        for (let item in filter) {
+            criteries[item] = { [Op.Op.like]: `%${filter[item]}%` }
+        }
+        return criteries
+    }
+    sort(req) {
+        const sort = req.query.sort
+        const criteries = []
+        for (let item in sort) {
+            criteries.push([item, sort[item]])
+        }
+        return criteries
+    }
 }

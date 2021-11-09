@@ -185,7 +185,7 @@ export default class SettingsView extends JetView {
 			editable: true,
 			columns: [
 				{
-					id: "id", header: "№"
+					id: "number", header: "№", editor:"text"
 				},
 				{
 					id: "name",
@@ -219,8 +219,14 @@ export default class SettingsView extends JetView {
 				{
 					cols: [
 						{
+							view:"text",
+							name:"number",
+							width:50,
+							invalidMessage:"Must be a number"
+						},
+						{
 							view: "text",
-							name: "songName",
+							name: "name",
 							invalidMessage:"Name must not be empty or repetitive"
 						},
 						{
@@ -246,9 +252,10 @@ export default class SettingsView extends JetView {
 				}
 			],
 			rules: {
-				songName: (value)=>{
+				name: (value)=>{
 					return this.fieldsValidation(value, songsCollection);
-				}
+				},
+				number:webix.rules.isNumber
 			}
 		};
 		const ui = {
@@ -284,12 +291,15 @@ export default class SettingsView extends JetView {
 		
 		const form = this.$$("table:form");
 		if (form.validate()) {
-			const albumId = this.album1.getValue();
-			const value = form.getValues().songName;
-			songsCollection.add({name:value, albumId: albumId});
+			const album = albumsCollection.find((item)=>{
+				if(item.name === this.album1.data.text) return item.id;
+			}, true);
+			const value = form.getValues();
+			value.albumId = album.id;
+			songsCollection.add( value);
 			form.clear();
 			form.clearValidation();
-			this.table.filter("albumId", albumId);
+			this.table.filter("albumId", album.id);
 		}
 	}
 	addGroup(){
@@ -302,11 +312,13 @@ export default class SettingsView extends JetView {
 		}
 	}
 	addAlbum(){
-
+		
 		if(this.form2.validate()){
 			const value = this.album2.getValue();
-			const groupId = this.group1.getValue();
-			albumsCollection.add({name:value, groupId:groupId});
+			const group = collectionA.find((item)=>{
+				if(item.name === this.group1.data.text) return item.id;
+			}, true);
+			albumsCollection.add({name:value, groupId:group.id});
 			this.album1.setValue(albumsCollection.getLastId());
 		}
 	}
@@ -363,7 +375,6 @@ export default class SettingsView extends JetView {
 		const dublicate = collection.find((obj)=>{
 			return obj.name === value;
 		}, true);
-		console.log(dublicate);
 		return value && !dublicate;
 	}
 }

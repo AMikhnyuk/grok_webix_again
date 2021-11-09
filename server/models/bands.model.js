@@ -1,7 +1,7 @@
 import DataTypes from "sequelize";
 import sequelize from "../seq.js";
 
-const Member = sequelize.define('Member', {
+const Band = sequelize.define('Band', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -10,20 +10,19 @@ const Member = sequelize.define('Member', {
     name: {
         type: DataTypes.STRING,
     },
-    role: {
+    composition: {
         type: DataTypes.STRING
     },
-    date: {
+    style: {
         type: DataTypes.STRING
     },
     country: {
         type: DataTypes.STRING
     },
-    awards: {
+    date: {
         type: DataTypes.STRING
     },
 
 }, {});
-
-await Member.sync({ alter: true })
-export default Member
+await Band.sync({ alter: true })
+export default Band

@@ -3,6 +3,7 @@ import {JetView} from "webix-jet";
 import albumsCollection from "../models/albumsCollection";
 import collectionA from "../models/collectionA";
 import songsCollection from "../models/songsCollection";
+import AlbumsUploader from "./albums.views/uploader";
 
 export default class AlbumsView extends JetView {
 	config() {
@@ -22,15 +23,17 @@ export default class AlbumsView extends JetView {
 			view: "datatable",
 			id: "albums:table",
 			select: true,
+			editable:true,
+			editaction:"dblclick",
 			columns: [
 				{
-					id: "name", header: "Album", fillspace: 5
+					id: "name", header: "Album", fillspace: 5, editor:"text"
 				},
 				{
-					id: "date", header: "Release", fillspace: 2
+					id: "date", header: "Release", fillspace: 2, editor:"text"
 				},
 				{
-					id: "songsnum", header: "Songs", fillspace: 2
+					id: "songsnum", header: "Songs", fillspace: 2, editor:"text"
 				},
 				{
 					id: "copiesnum",
@@ -39,18 +42,27 @@ export default class AlbumsView extends JetView {
 						const M = 1000000
 						const K = 1000
 						return `> 
-						${copiesnum / M > 1 ? `${copiesnum / M}M` : `${copiesnum / T}K`} `;
+						${copiesnum / M > 1 ? `${copiesnum / M}M` : `${copiesnum / K}K`} `;
 					},
-					fillspace: 2
+					fillspace: 2, editor:"text"
 				},
 				{
-					id: "remove", header: ""
+					template: "<i class=\"webix_icon wxi-trash remove\"></i>",
+					width: 50
 				}
 
 			],
+			onClick: {
+				remove: (e, item) => {
+					webix.confirm("Delete?").then(() => {
+						albumsCollection.remove(item.row);
+					});
+					return false;
+				}
+			},
 			on: {
 				onAfterSelect: (item) => {
-					this.parseTemplate(item);
+					this.parseTemplate(item.id);
 				}
 			},
 			scroll: "auto",
@@ -65,32 +77,37 @@ export default class AlbumsView extends JetView {
 							<div>${name}</div>
 						</div>
 						<div class="top_cancel">
-							<i class="webix_icon wxi-close remove"></i>
+							<i class="webix_icon wxi-close close"></i>
 						</div>
 					</div>
 					<div class="info_group">
 						<div>${group}</div>
 					</div>
 					<div class="info_image">
-						<img src=${image}>
+						${image ? `<img src=${image}><button class="upload">Change Photo</button>`:`<button class="upload">Upload Photo</button>`}
 					</div>
 					</div>
 				`,
 			onClick: {
-				remove: () => {
+				close: () => {
 					this.$$("albums:template").hide();
 					this.$$("albums:table").unselectAll();
+				},
+				upload:()=>{
+					const albumId = this.$$("template:info").getValues().id
+					this.uploader.upload(albumId)
 				}
 			},
 			gravity: 1
 
 		};
+
 		const templateTable = {
 			view: "datatable",
 			localId: "template:table",
 			columns: [
 				{
-					id: "id", header: "№", adjust: "content"
+					id: "number", header: "№", adjust: "content"
 				},
 				{
 					id: "name", header: "Song", fillspace: true
@@ -129,15 +146,23 @@ export default class AlbumsView extends JetView {
 			table.sync(albumsCollection);
 			templateTable.sync(songsCollection);
 		});
+		this.uploader = this.ui(AlbumsUploader)
+		this.on(this.app, "parseImage", (albumId, result)=>{
+			this.parseTemplate(albumId, result)
+		})
 	}
 
-	parseTemplate(item) {
-		const data = albumsCollection.getItem(item.id);
-		const template = this.$$("albums:template");
-		const info = this.$$("template:info");
-		const templateTable = this.$$("template:table");
-		template.show();
-		info.parse({...data, group: collectionA.getItem(data.groupId).name});
-		templateTable.filter("#albumId#", item.id);
+	parseTemplate(albumId, image) {
+		albumsCollection.waitData.then(()=>{
+			const data = albumsCollection.getItem(albumId);
+			const template = this.$$("albums:template");
+			const info = this.$$("template:info");
+			const templateTable = this.$$("template:table");
+			template.show();
+			info.parse({...data,
+				 group: collectionA.getItem(data.groupId).name,
+				image : image ? image : data.image});
+			templateTable.filter("#albumId#", albumId);
+		})
 	}
 }

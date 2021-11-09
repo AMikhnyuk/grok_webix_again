@@ -90,8 +90,20 @@ export default class GroupsView extends JetView {
 					editor: "text",
 					sort: "text",
 					fillspace: 2
+				},
+				{
+					template: "<i class=\"webix_icon wxi-trash remove\"></i>",
+					width: 50
 				}
-			]
+			],
+			onClick: {
+				remove: (e, item) => {
+					webix.confirm("Delete?").then(() => {
+						collectionA.remove(item.row);
+					});
+					return false;
+				}
+			},
 
 		};
 		const ui = {

@@ -1,7 +1,5 @@
 import {JetView} from "webix-jet";
 
-import collectionB from "../models/collectionB";
-
 export default class MembersView extends JetView {
 	config() {
 		const membersTable = {
@@ -16,11 +14,11 @@ export default class MembersView extends JetView {
 							text: "Member Name"
 						},
 						{
-							content: "textFilter"
+							content: "serverFilter"
 						}
 					],
 					editor: "text",
-					sort: "text",
+					sort: "server",
 					fillspace: true
 				},
 				{
@@ -30,11 +28,11 @@ export default class MembersView extends JetView {
 							text: "Role"
 						},
 						{
-							content: "selectFilter"
+							content: "serverSelectFilter"
 						}
 					],
 					editor: "text",
-					sort: "text",
+					sort: "server",
 					adjust: true
 				},
 				{
@@ -44,11 +42,11 @@ export default class MembersView extends JetView {
 							text: "Date of Birth"
 						},
 						{
-							content: "dateFilter"
+							content: "serverFilter"
 						}
 					],
 					editor: "text",
-					sort: "date",
+					sort: "server",
 					adjust: true
 				},
 				{
@@ -58,11 +56,11 @@ export default class MembersView extends JetView {
 							text: "Country"
 						},
 						{
-							content: "selectFilter"
+							content: "serverSelectFilter"
 						}
 					],
 					editor: "text",
-					sort: "text",
+					sort: "server",
 					adjust: true
 				},
 				{
@@ -72,11 +70,11 @@ export default class MembersView extends JetView {
 							text: "Awards"
 						},
 						{
-							content: "textFilter"
+							content: "serverFilter"
 						}
 					],
 					editor: "text",
-					sort: "text",
+					sort: "server",
 					adjust: true
 				}
 			]
@@ -86,6 +84,7 @@ export default class MembersView extends JetView {
 
 	init() {
 		const table = this.$$("members:table");
-		table.sync(collectionB);
+		// table.sync(collectionB);
+		table.load("http://localhost:3000/members");
 	}
 }

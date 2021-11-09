@@ -1,18 +1,16 @@
-import Model from "sequelize"
 import Sequelize from "sequelize";
-import DataTypes from "sequelize";
+import dotenv from "dotenv"
+dotenv.config()
 
 
 const sequelize = new Sequelize(
-    'mydb',
-    'root',
-    '123',
+    process.env.DATABASE,
+    process.env.USER,
+    process.env.PASWORD,
     {
         dialect: 'mysql',
     }
 )
 
-sequelize
-    .authenticate()
-    .then(() => console.log('Connected.'))
-    .catch((err) => console.error('Connection error: ', err))
+export default sequelize
+
