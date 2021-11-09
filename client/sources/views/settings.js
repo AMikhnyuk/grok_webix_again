@@ -229,6 +229,7 @@ export default class SettingsView extends JetView {
 							name: "name",
 							invalidMessage:"Name must not be empty or repetitive"
 						},
+						
 						{
 							view: "button",
 							localId: "add:button",
@@ -238,6 +239,24 @@ export default class SettingsView extends JetView {
 								this.addSong();
 							},
 							disabled: true
+						},
+						{
+							view:"uploader",
+							width:150,
+							localId:"upload:button",
+							value:"Upload .txt",
+							upload:"",
+							autosend:false,
+							disabled:true,
+							tooltip:`example:
+									<div>1.Songname</div>
+									<div>2.Songname</div>
+									<div>3.Songname</div>`,
+							on:{
+								onAfterFileAdd:(upload)=>{
+									this.uploadFile(upload);
+								}
+							}
 						},
 						{
 							view: "button",
@@ -291,9 +310,7 @@ export default class SettingsView extends JetView {
 		
 		const form = this.$$("table:form");
 		if (form.validate()) {
-			const album = albumsCollection.find((item)=>{
-				if(item.name === this.album1.data.text) return item.id;
-			}, true);
+			const album = this.find(albumsCollection, this.album1);
 			const value = form.getValues();
 			value.albumId = album.id;
 			songsCollection.add( value);
@@ -315,9 +332,7 @@ export default class SettingsView extends JetView {
 		
 		if(this.form2.validate()){
 			const value = this.album2.getValue();
-			const group = collectionA.find((item)=>{
-				if(item.name === this.group1.data.text) return item.id;
-			}, true);
+			const group = this.find(collectionA, this.group1);
 			albumsCollection.add({name:value, groupId:group.id});
 			this.album1.setValue(albumsCollection.getLastId());
 		}
@@ -336,6 +351,7 @@ export default class SettingsView extends JetView {
 		this.albumAdd.disable();
 		this.table.filter("#albumId#", id);
 		this.$$("add:button").enable();
+		this.$$("upload:button").enable();
 		this.form2.clearValidation();
 	}
 	albumsEnable(){
@@ -359,6 +375,7 @@ export default class SettingsView extends JetView {
 		this.album2.setValue();
 		this.form2.clearValidation();
 		this.$$("add:button").disable();
+		this.$$("upload:button").disable();
 		this.table.filter();
 	}
 	clearGroups(){
@@ -376,5 +393,23 @@ export default class SettingsView extends JetView {
 			return obj.name === value;
 		}, true);
 		return value && !dublicate;
+	}
+	find(collection, target){
+		return collection.find((item)=>{
+			if(item.name === target.getText()) return item.id;
+		}, true);
+	}
+	uploadFile(upload){
+		const reader = new FileReader();
+		reader.readAsText(upload.file);
+		const album = this.find(albumsCollection, this.album1);
+		reader.onload = (event)=>{
+			const result = event.target.result.split("\r\n").map((item)=>item.trim().split("."));
+			for(let item of result){
+				songsCollection.add({number:item[0], name:item[1], albumId:album.id});
+			}
+			this.table.filter("#albumId#", album.id);
+		};
+									
 	}
 }
