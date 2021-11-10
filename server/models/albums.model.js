@@ -23,7 +23,7 @@ const Album = sequelize.define('Album', {
         type: DataTypes.INTEGER
     },
     image: {
-        type: DataTypes.STRING(1234)
+        type: DataTypes.TEXT
     }
 }, {});
 await Album.sync({ alter: true })
