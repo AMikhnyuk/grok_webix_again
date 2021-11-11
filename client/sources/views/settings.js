@@ -8,25 +8,25 @@ import songsCollection from "../models/songsCollection";
 export default class SettingsView extends JetView {
 	config() {
 		const settingsHeader = {
-			cols:[
+			cols: [
 				{},
 				{
-					view:"checkbox",
-					width:25,
-					on:{
-						onChange:(value)=>{
+					view: "checkbox",
+					width: 25,
+					on: {
+						onChange: (value) => {
 							const form2 = this.$$("settings:form2");
-							value ? form2.enable() : form2.disable();
+							if (value) form2.enable();
+							else form2.disable();
 						}
 					}
-				},
+				}
 			],
-			height:43
+			height: 43
 
 		};
 
-			
-		
+
 		const settingsForm1 = {
 			view: "form",
 			localId: "settings:form1",
@@ -86,47 +86,45 @@ export default class SettingsView extends JetView {
 		const settingsForm2 = {
 			view: "form",
 			localId: "settings:form2",
-			disabled:true,
+			disabled: true,
 			elements: [
 				{
-					cols:[
-						
+					cols: [
+
 						{
-							template:"Custom Settings", type:"section"
-						},
-					
-						
-						
+							template: "Custom Settings", type: "section"
+						}
+
+
 					],
-					margin:28
+					margin: 28
 				},
 				{
-					cols:[
+					cols: [
 						{
-							view:"text",
-							label:"Group",
-							name:"groupName",
-							localId:"form2:group",
-							invalidMessage:"Name must not be empty or repetitive"
+							view: "text",
+							label: "Group",
+							name: "groupName",
+							localId: "form2:group",
+							invalidMessage: "Name must not be empty or repetitive"
 						},
 						{
-							view:"button",
-							localId:"group2:add",
-							css:"webix_primary",
-							type:"icon",
-							icon:"wxi_icon wxi-plus",
-							width:50,
-							click:()=>{
+							view: "button",
+							localId: "group2:add",
+							css: "webix_primary",
+							type: "icon",
+							icon: "wxi_icon wxi-plus",
+							width: 50,
+							click: () => {
 								this.addGroup();
-								
 							}
 						},
 						{
-							view:"button",
-							type:"icon",
-							icon:"wxi_icon wxi-close",
-							width:50,
-							click:()=>{
+							view: "button",
+							type: "icon",
+							icon: "wxi_icon wxi-close",
+							width: 50,
+							click: () => {
 								this.clearAll();
 								this.groupsEnable();
 							}
@@ -134,35 +132,35 @@ export default class SettingsView extends JetView {
 					]
 				},
 				{
-					cols:[
+					cols: [
 						{
-							view:"text",
-							localId:"form2:album",
-							name:"albumName",
-							label:"Album",
-							disabled:true,
-							invalidMessage:"Name must not be empty or repetitive"
+							view: "text",
+							localId: "form2:album",
+							name: "albumName",
+							label: "Album",
+							disabled: true,
+							invalidMessage: "Name must not be empty or repetitive"
 						},
 						{
-							view:"button",
-							localId:"album2:add",
-							css:"webix_primary",
-							type:"icon",
-							icon:"wxi_icon wxi-plus",
-							width:50,
-							disabled:true,
-							click:()=>{
+							view: "button",
+							localId: "album2:add",
+							css: "webix_primary",
+							type: "icon",
+							icon: "wxi_icon wxi-plus",
+							width: 50,
+							disabled: true,
+							click: () => {
 								this.addAlbum();
 							}
 						},
 						{
-							view:"button",
-							type:"icon",
-							localId:"album2:clear",
-							icon:"whi_icon wxi-close",
-							width:50,
-							disabled:true,
-							click:()=>{
+							view: "button",
+							type: "icon",
+							localId: "album2:clear",
+							icon: "whi_icon wxi-close",
+							width: 50,
+							disabled: true,
+							click: () => {
 								this.clearAlbums();
 								this.albumsEnable();
 							}
@@ -170,13 +168,9 @@ export default class SettingsView extends JetView {
 					]
 				}
 			],
-			rules:{
-				groupName:(value)=>{
-					return this.fieldsValidation(value, collectionA);
-				},
-				albumName:(value) =>{
-					return this.fieldsValidation(value, albumsCollection);
-				}
+			rules: {
+				groupName: value => this.fieldsValidation(value, "name", collectionA),
+				albumName: value => this.fieldsValidation(value, "name", albumsCollection, "groupId", this.find(collectionA, this.group1).id)
 			}
 		};
 		const settingsTable = {
@@ -185,7 +179,7 @@ export default class SettingsView extends JetView {
 			editable: true,
 			columns: [
 				{
-					id: "number", header: "№", editor:"text"
+					id: "number", header: "№", editor: "text"
 				},
 				{
 					id: "name",
@@ -219,17 +213,17 @@ export default class SettingsView extends JetView {
 				{
 					cols: [
 						{
-							view:"text",
-							name:"number",
-							width:50,
-							invalidMessage:"Must be a number"
+							view: "text",
+							name: "number",
+							width: 50,
+							invalidMessage: "Must be a number, and not repetitive"
 						},
 						{
 							view: "text",
 							name: "name",
-							invalidMessage:"Name must not be empty or repetitive"
+							invalidMessage: "Name must not be empty or repetitive"
 						},
-						
+
 						{
 							view: "button",
 							localId: "add:button",
@@ -241,19 +235,19 @@ export default class SettingsView extends JetView {
 							disabled: true
 						},
 						{
-							view:"uploader",
-							width:150,
-							localId:"upload:button",
-							value:"Upload .txt",
-							upload:"",
-							autosend:false,
-							disabled:true,
-							tooltip:`example:
+							view: "uploader",
+							width: 150,
+							localId: "upload:button",
+							value: "Upload .txt",
+							upload: "",
+							autosend: false,
+							disabled: true,
+							tooltip: `example:
 									<div>1.Songname</div>
 									<div>2.Songname</div>
 									<div>3.Songname</div>`,
-							on:{
-								onAfterFileAdd:(upload)=>{
+							on: {
+								onAfterFileAdd: (upload) => {
 									this.uploadFile(upload);
 								}
 							}
@@ -271,10 +265,8 @@ export default class SettingsView extends JetView {
 				}
 			],
 			rules: {
-				name: (value)=>{
-					return this.fieldsValidation(value, songsCollection);
-				},
-				number:webix.rules.isNumber
+				name: value => this.fieldsValidation(value, "name", songsCollection, "albumId", this.find(albumsCollection, this.album1).id),
+				number: value => this.fieldsValidation(value, "number", songsCollection, "albumId", this.find(albumsCollection, this.album1).id)
 			}
 		};
 		const ui = {
@@ -307,44 +299,45 @@ export default class SettingsView extends JetView {
 	}
 
 	addSong() {
-		
 		const form = this.$$("table:form");
 		if (form.validate()) {
 			const album = this.find(albumsCollection, this.album1);
 			const value = form.getValues();
 			value.albumId = album.id;
-			songsCollection.add( value);
+			songsCollection.add(value);
 			form.clear();
 			form.clearValidation();
 			this.table.filter("albumId", album.id);
 		}
 	}
-	addGroup(){
-		
-		if (this.form2.validate()){
+
+	addGroup() {
+		if (this.form2.validate()) {
 			const value = this.group2.getValue();
-			collectionA.add({name:value});
+			collectionA.add({name: value});
 			this.group1.setValue(collectionA.getLastId());
 			this.albumsEnable();
 		}
 	}
-	addAlbum(){
-		
-		if(this.form2.validate()){
+
+	addAlbum() {
+		if (this.form2.validate()) {
 			const value = this.album2.getValue();
 			const group = this.find(collectionA, this.group1);
-			albumsCollection.add({name:value, groupId:group.id});
+			albumsCollection.add({name: value, groupId: group.id});
 			this.album1.setValue(albumsCollection.getLastId());
 		}
 	}
-	groupSelect(){
+
+	groupSelect() {
 		const group1Value = this.group1.data.text;
 		this.group2.setValue(group1Value);
 		this.album1.setValue();
 		this.albumsEnable();
 		this.form2.clearValidation();
 	}
-	albumSelect(id){
+
+	albumSelect(id) {
 		const album1Value = this.album1.data.text;
 		this.album2.setValue(album1Value);
 		this.album2.disable();
@@ -354,7 +347,8 @@ export default class SettingsView extends JetView {
 		this.$$("upload:button").enable();
 		this.form2.clearValidation();
 	}
-	albumsEnable(){
+
+	albumsEnable() {
 		this.group2.disable();
 		this.groupAdd.disable();
 		this.album1.enable();
@@ -362,15 +356,17 @@ export default class SettingsView extends JetView {
 		this.albumAdd.enable();
 		this.albumClear.enable();
 	}
-	groupsEnable(){
+
+	groupsEnable() {
 		this.group2.enable();
 		this.groupAdd.enable();
 		this.album1.disable();
 		this.album2.disable();
 		this.albumAdd.disable();
-		this.albumClear.disable();	
+		this.albumClear.disable();
 	}
-	clearAlbums(){
+
+	clearAlbums() {
 		this.album1.setValue();
 		this.album2.setValue();
 		this.form2.clearValidation();
@@ -378,38 +374,45 @@ export default class SettingsView extends JetView {
 		this.$$("upload:button").disable();
 		this.table.filter();
 	}
-	clearGroups(){
+
+	clearGroups() {
 		this.group1.setValue();
 		this.group2.setValue();
 		this.form2.clearValidation();
 	}
+
 	clearAll() {
 		this.clearAlbums();
 		this.clearGroups();
-		this.table.filter();
 	}
-	fieldsValidation(value ,collection){
-		const dublicate = collection.find((obj)=>{
-			return obj.name === value;
+
+	fieldsValidation(value, name, collection, param, id) {
+		const dublicate = collection.find((obj) => {
+			if (`${obj[name]}` === value) {
+				return param ? obj[param] === id : true;
+			}
+			return false;
 		}, true);
 		return value && !dublicate;
 	}
-	find(collection, target){
-		return collection.find((item)=>{
-			if(item.name === target.getText()) return item.id;
+
+	find(collection, target) {
+		return collection.find((item) => {
+			if (item.name === target.getText()) return item.id;
+			return false;
 		}, true);
 	}
-	uploadFile(upload){
+
+	uploadFile(upload) {
 		const reader = new FileReader();
 		reader.readAsText(upload.file);
 		const album = this.find(albumsCollection, this.album1);
-		reader.onload = (event)=>{
-			const result = event.target.result.split("\r\n").map((item)=>item.trim().split("."));
-			for(let item of result){
-				songsCollection.add({number:item[0], name:item[1], albumId:album.id});
-			}
+		reader.onload = (event) => {
+			const result = event.target.result.split("\r\n").map(item => item.trim().split("."));
+			result.forEach((item) => {
+				songsCollection.add({number: item[0], name: item[1], albumId: album.id});
+			});
 			this.table.filter("#albumId#", album.id);
 		};
-									
 	}
 }

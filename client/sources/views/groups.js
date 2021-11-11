@@ -1,6 +1,8 @@
 import {JetView} from "webix-jet";
 
+import albumsCollection from "../models/albumsCollection";
 import collectionA from "../models/collectionA";
+import songsCollection from "../models/songsCollection";
 
 export default class GroupsView extends JetView {
 	config() {
@@ -99,11 +101,19 @@ export default class GroupsView extends JetView {
 			onClick: {
 				remove: (e, item) => {
 					webix.confirm("Delete?").then(() => {
+						const albums = albumsCollection.find(obj => obj.groupId === item.row);
+						albums.forEach((album) => {
+							const songs = songsCollection.find(obj => obj.albumId === album.id);
+							songs.forEach((song) => {
+								songsCollection.remove(song.id);
+							});
+							albumsCollection.remove(album.id);
+						});
 						collectionA.remove(item.row);
 					});
 					return false;
 				}
-			},
+			}
 
 		};
 		const ui = {

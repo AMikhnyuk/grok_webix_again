@@ -1,13 +1,14 @@
-import { JetView } from "webix-jet";
+import {JetView} from "webix-jet";
+
 import albumsCollection from "../../models/albumsCollection";
 
-export default class AlbumsUploader extends JetView{
-	config(){
+export default class AlbumsUploader extends JetView {
+	config() {
 		const uploader = {
-			view:"uploader",
-			localId:"uploader",
-			apiOnly:true,
-			url:"",
+			view: "uploader",
+			localId: "uploader",
+			apiOnly: true,
+			url: "",
 			on: {
 				onBeforeFileAdd: (upload) => {
 					const file = upload.file;
@@ -17,14 +18,15 @@ export default class AlbumsUploader extends JetView{
 						this.app.callEvent("parseImage", [this.albumId, event.target.result]);
 					};
 					reader.readAsDataURL(file);
-					
+
 					return false;
 				}
-			},
+			}
 		};
 		return uploader;
 	}
-	upload(albumId){
+
+	upload(albumId) {
 		this.getRoot().fileDialog();
 		this.albumId = albumId;
 	}

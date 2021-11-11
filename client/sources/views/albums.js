@@ -23,28 +23,32 @@ export default class AlbumsView extends JetView {
 			view: "datatable",
 			id: "albums:table",
 			select: true,
-			editable:true,
-			editaction:"dblclick",
+			editable: true,
+			editaction: "dblclick",
 			columns: [
 				{
-					id: "name", header: "Album", fillspace: 5, editor:"text"
+					id: "name", header: "Album", fillspace: 5, editor: "text"
 				},
 				{
-					id: "date", header: "Release", fillspace: 2, editor:"text"
+					id: "date", header: "Release", fillspace: 2, editor: "text"
 				},
 				{
-					id: "songsnum", header: "Songs", fillspace: 2, editor:"text"
+					id: "songsnum", header: "Songs", fillspace: 2, editor: "text"
 				},
 				{
 					id: "copiesnum",
 					header: "Copies",
 					template({copiesnum}) {
-						const M = 1000000
-						const K = 1000
-						return `> 
-						${copiesnum / M > 1 ? `${copiesnum / M}M` : `${copiesnum / K}K`} `;
+						const M = 1000000;
+						const K = 1000;
+						if (copiesnum > 0) {
+							return `
+							>${copiesnum >= M ? `${Math.floor(copiesnum / M)}M` : `${Math.floor(copiesnum / K)}K`} `;
+						}
+						return "";
 					},
-					fillspace: 2, editor:"text"
+					fillspace: 2,
+					editor: "text"
 				},
 				{
 					template: "<i class=\"webix_icon wxi-trash remove\"></i>",
@@ -55,6 +59,10 @@ export default class AlbumsView extends JetView {
 			onClick: {
 				remove: (e, item) => {
 					webix.confirm("Delete?").then(() => {
+						const songs = songsCollection.find(obj => obj.albumId === item.row);
+						songs.forEach((song) => {
+							songsCollection.remove(song.id);
+						});
 						albumsCollection.remove(item.row);
 					});
 					return false;
@@ -84,7 +92,7 @@ export default class AlbumsView extends JetView {
 						<div>${group}</div>
 					</div>
 					<div class="info_image">
-						${image ? `<img src=${image}><button class="upload">Change Photo</button>`:`<button class="upload">Upload Photo</button>`}
+						${image ? `<img src=${image}><button class="upload">Change Photo</button>` : "<button class=\"upload\">Upload Photo</button>"}
 					</div>
 					</div>
 				`,
@@ -93,9 +101,9 @@ export default class AlbumsView extends JetView {
 					this.$$("albums:template").hide();
 					this.$$("albums:table").unselectAll();
 				},
-				upload:()=>{
-					const albumId = this.$$("template:info").getValues().id
-					this.uploader.upload(albumId)
+				upload: () => {
+					const albumId = this.$$("template:info").getValues().id;
+					this.uploader.upload(albumId);
 				}
 			},
 			gravity: 1
@@ -146,23 +154,23 @@ export default class AlbumsView extends JetView {
 			table.sync(albumsCollection);
 			templateTable.sync(songsCollection);
 		});
-		this.uploader = this.ui(AlbumsUploader)
-		this.on(this.app, "parseImage", (albumId, result)=>{
-			this.parseTemplate(albumId, result)
-		})
+		this.uploader = this.ui(AlbumsUploader);
+		this.on(this.app, "parseImage", (albumId, result) => {
+			this.parseTemplate(albumId, result);
+		});
 	}
 
 	parseTemplate(albumId, image) {
-		albumsCollection.waitData.then(()=>{
+		albumsCollection.waitData.then(() => {
 			const data = albumsCollection.getItem(albumId);
 			const template = this.$$("albums:template");
 			const info = this.$$("template:info");
 			const templateTable = this.$$("template:table");
 			template.show();
 			info.parse({...data,
-				 group: collectionA.getItem(data.groupId).name,
-				image : image ? image : data.image});
+				group: collectionA.getItem(data.groupId).name,
+				image: image || data.image});
 			templateTable.filter("#albumId#", albumId);
-		})
+		});
 	}
 }
