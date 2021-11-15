@@ -56,3 +56,26 @@
 	font-size:20px;
 	vertical-align:middle;
 }
+.info_image img{
+    width: 200px;
+    height: 200px;
+}
+.top_title{
+    font-size: 20px;
+    padding-top: 8px;
+    margin-bottom: 5px;
+}
+.info_group{
+    font-style: italic;
+    margin-bottom: 20px;
+}
+.top_cancel{
+    padding-top: 8px;
+}
+.top_cancel i:hover{
+    cursor: pointer;
+}
+.info_top{
+    display: flex;
+    justify-content: space-between;
+}
